@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class Manager : MonoBehaviour {
+    public LanguageManager language;
     public GameObject[] duplas;
     public float[] pos;
     public float[] posPicked;
@@ -15,7 +16,7 @@ public class Manager : MonoBehaviour {
     public int teste = 0;
 
     public GameObject winPanel;
-	public GameObject loosePanel;
+	public GameObject losePanel;
 
 	public Text text;
     public int cardsActived;
@@ -31,6 +32,9 @@ public class Manager : MonoBehaviour {
 	public Text TimerCounter;
 	public float gameTime;
 	public float currentTimer;
+
+    public string Tempo;
+    public string Remain;
    // Use this for initialization
 	void Awake()
 	{
@@ -41,11 +45,30 @@ public class Manager : MonoBehaviour {
 		gameTime = 120;
         showCardTime = 1.1f;
 		cards = GameObject.FindGameObjectsWithTag("Cards").Length;
+        language = GameObject.Find("LanguageManager").GetComponent<LanguageManager>();
     }
 
     // Update is called once per frame
     void Update() {
-       for(int i = 0; i < duplas.Length; i++)
+        if(language.language == 0)
+        {
+            Tempo = "Tempo: ";
+            Remain = "Restam: ";
+        }
+
+        else if (language.language == 1)
+        {
+            Tempo = "Time: ";
+            Remain = "Remain: ";
+        }
+
+        else
+        {
+            Tempo = "Tiempo: ";
+            Remain = "Se quedan: ";
+        }
+
+        for (int i = 0; i < duplas.Length; i++)
         {
             random = Random.Range(0, 20);
             
@@ -89,14 +112,15 @@ public class Manager : MonoBehaviour {
             duplas[i].GetComponent<RectTransform>().localPosition = new Vector3(pX, pY, 0);
         }
 
-		if(winPanel.activeSelf == false && loosePanel.activeSelf == false)
+		if(winPanel.activeSelf == false && losePanel.activeSelf == false)
 		currentTimer = Mathf.Round(gameTime -= Time.deltaTime);
 		
-		TimerCounter.text = "Tempo: " + currentTimer.ToString() + " segs";
+		TimerCounter.text = Tempo + currentTimer.ToString() + " segs";
 
 		if (currentTimer <= 0) 
 		{
-			loosePanel.SetActive (true);
+            losePanel.SetActive(true);
+            GetComponent<AudioSource>().enabled = false;
 
 			foreach (GameObject go in duplas)
 				go.GetComponent<Button> ().interactable = false;
@@ -104,13 +128,13 @@ public class Manager : MonoBehaviour {
 
 		couples = (cards / 2) - score;
 
-		text.text = "Faltam: " + couples.ToString();
+		text.text = Remain + couples.ToString();
 
 		if (couples == 0 && currentTimer > 0) 
 		{
 			winPanel.SetActive (true);
-
-			foreach (GameObject go in duplas)
+            GetComponent<AudioSource>().enabled = false;
+            foreach (GameObject go in duplas)
 				go.GetComponent<Button> ().interactable = false;
 		}
 

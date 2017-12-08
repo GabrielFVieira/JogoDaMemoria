@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class LevelManager : MonoBehaviour {
 	public GameManager game;
 	public GameObject soundButton;
-    public AudioSource song;
+    public AudioSource[] song;
 	public Sprite sound;
 	public Sprite mute;
 	// Use this for initialization
@@ -26,13 +26,15 @@ public class LevelManager : MonoBehaviour {
         if (game.sound == true)
         {
             soundButton.GetComponent<Image>().sprite = sound;
-            song.volume = 1;
+            foreach(AudioSource AS in song)
+            AS.volume = 1;
         }
 
         if(game.sound == false)
         {
             soundButton.GetComponent<Image>().sprite = mute;
-            song.volume = 0;
+            foreach (AudioSource AS in song)
+                AS.volume = 0;
         }
 	}
 
