@@ -21,16 +21,21 @@ public class Menu : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update ()
-    {
+    {/*
         buttons[0].sprite = play[language.language];
         buttons[1].sprite = options[language.language];
         buttons[2].sprite = credits[language.language];
-        buttons[3].sprite = exit[language.language];
+        buttons[3].sprite = exit[language.language];*/
     }
 
     public void PlayGame()
     {
-        SceneManager.LoadScene("Game");
+        SceneManager.LoadScene("Instructions");
+    }
+
+    public void AboutGame()
+    {
+        SceneManager.LoadScene("About");
     }
 
     public void Options()

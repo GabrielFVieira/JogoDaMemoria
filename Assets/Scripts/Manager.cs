@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class Manager : MonoBehaviour {
     public LanguageManager language;
@@ -18,7 +19,7 @@ public class Manager : MonoBehaviour {
     public GameObject winPanel;
 	public GameObject losePanel;
 
-	public Text text;
+	public TextMeshProUGUI text;
     public int cardsActived;
 
     public float Timer;
@@ -29,12 +30,17 @@ public class Manager : MonoBehaviour {
 	public int cards;
 	public int couples;
 
-	public Text TimerCounter;
+	public TextMeshProUGUI TimerCounter;
 	public float gameTime;
 	public float currentTimer;
 
     public string Tempo;
     public string Remain;
+
+    public GameObject arrow;
+    public GameObject arrow2;
+    private bool controle;
+    private float arrowTimer;
    // Use this for initialization
 	void Awake()
 	{
@@ -42,7 +48,7 @@ public class Manager : MonoBehaviour {
 	}
 
     void Start() {
-		gameTime = 120;
+		gameTime = 180;
         showCardTime = 1.1f;
 		cards = GameObject.FindGameObjectsWithTag("Cards").Length;
         language = GameObject.Find("LanguageManager").GetComponent<LanguageManager>();
@@ -50,27 +56,21 @@ public class Manager : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        if(language.language == 0)
         {
-            Tempo = "Tempo: ";
-            Remain = "Restam: ";
-        }
-
-        else if (language.language == 1)
-        {
-            Tempo = "Time: ";
-            Remain = "Remain: ";
-        }
-
-        else
-        {
-            Tempo = "Tiempo: ";
-            Remain = "Se quedan: ";
+        if(winPanel.activeSelf || losePanel.activeSelf)
+            arrowTimer += Time.deltaTime;
+            
+            if(arrowTimer > 0.3f)
+            {
+                arrow.SetActive(!arrow.activeSelf);
+                arrow2.SetActive(!arrow2.activeSelf);
+                arrowTimer = 0;
+            }
         }
 
         for (int i = 0; i < duplas.Length; i++)
         {
-            random = Random.Range(0, 20);
+            random = Random.Range(0, 22);
             
             if(posPicked[random] == 0)
             {
@@ -79,35 +79,38 @@ public class Manager : MonoBehaviour {
                 posPicked[random] = 1;
             }
 
-            if (pos[i] == 0 || pos[i] == 6 || pos[i] == 13)
-                pX = -322.5f;
+            if (pos[i] == 0 || pos[i] == 7 || pos[i] == 14)
+                pX = -345f;
 
-            else if (pos[i] == 1 || pos[i] == 7 || pos[i] == 14)
-                pX = -215.5f;
+            else if (pos[i] == 1 || pos[i] == 8 || pos[i] == 15)
+                pX = -256f;
 
-            else if (pos[i] == 2 || pos[i] == 8 || pos[i] == 15)
-                pX = -108.5f;
+            else if (pos[i] == 2 || pos[i] == 9 || pos[i] == 16)
+                pX = -167f;
 
-            else if (pos[i] == 3 || pos[i] == 9 || pos[i] == 16)
-                pX = -0.499939f;
+            else if (pos[i] == 3 || pos[i] == 10 || pos[i] == 17)
+                pX = -78f;
 
-            else if(pos[i] == 4 || pos[i] == 10 || pos[i] == 17)
-                pX = 106.5f;
+            else if(pos[i] == 4 || pos[i] == 11 || pos[i] == 18)
+                pX = 11f;
 
-            else if (pos[i] == 5 || pos[i] == 11 || pos[i] == 18)
-                pX = 213.5f;
+            else if (pos[i] == 5 || pos[i] == 12 || pos[i] == 19)
+                pX = 100f;
+
+            else if (pos[i] == 6 || pos[i] == 13 || pos[i] == 20)
+                pX = 189f;
 
             else
-                pX = 320.5f;
+                pX = 278f;
 
-            if (pos[i] >= 0 && pos[i] <= 5)
+            if (pos[i] >= 0 && pos[i] <= 6)
                 pY = 142f;
 
-            else if (pos[i] >= 6 && pos[i] <= 12)
-                pY = -1f;
+            else if (pos[i] >= 7 && pos[i] <= 13)
+                pY = 0;
 
             else
-                pY = -147.5f;
+                pY = -142f;
 
             duplas[i].GetComponent<RectTransform>().localPosition = new Vector3(pX, pY, 0);
         }
@@ -115,11 +118,20 @@ public class Manager : MonoBehaviour {
 		if(winPanel.activeSelf == false && losePanel.activeSelf == false)
 		currentTimer = Mathf.Round(gameTime -= Time.deltaTime);
 		
-		TimerCounter.text = Tempo + currentTimer.ToString() + " segs";
+        if(currentTimer > 1)
+		    TimerCounter.text = "<u>Tempo restante:</u> " + currentTimer.ToString() + " segundos";
 
-		if (currentTimer <= 0) 
+        else
+            TimerCounter.text = "<u>Tempo restante: </u> " + currentTimer.ToString() + " segundo";
+
+        if (currentTimer <= 0) 
 		{
             losePanel.SetActive(true);
+            if (!controle)
+            {
+                arrow2.SetActive(true);
+                controle = true;
+            }
             GetComponent<AudioSource>().enabled = false;
 
 			foreach (GameObject go in duplas)
@@ -128,11 +140,20 @@ public class Manager : MonoBehaviour {
 
 		couples = (cards / 2) - score;
 
-		text.text = Remain + couples.ToString();
+        if(couples > 1)
+		    text.text = "<u>Faltam:</u> " + couples.ToString() + " pares";
 
-		if (couples == 0 && currentTimer > 0) 
+        else
+            text.text = "<u>Falta:</u> " + couples.ToString() + " par";
+
+        if (couples == 0 && currentTimer > 0) 
 		{
 			winPanel.SetActive (true);
+            if (!controle)
+            {
+                arrow2.SetActive(true);
+                controle = true;
+            }
             GetComponent<AudioSource>().enabled = false;
             foreach (GameObject go in duplas)
 				go.GetComponent<Button> ().interactable = false;
